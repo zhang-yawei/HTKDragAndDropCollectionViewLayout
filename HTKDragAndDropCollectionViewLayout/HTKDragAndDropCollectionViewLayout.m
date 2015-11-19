@@ -41,7 +41,7 @@
  * Returns number of items that will fit per row based on fixed
  * itemSize.
  */
-@property (readonly, nonatomic) NSInteger numberOfItemsPerRow;
+@property (readonly, nonatomic) NSInteger numberOfItemsPerRow; //每一行的item 数
 
 /**
  * Resets the frames based on new position in the itemArray. Will
@@ -94,7 +94,11 @@
         [self.itemArray removeAllObjects];
     }
 }
-
+/**
+ *  默认这个方法什么也不做,但是当子类实现后,一般做一些初始化的工作
+ 之后调用collectionViewContentSize
+    再调用-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
+ */
 - (void)prepareLayout {
     [super prepareLayout];
 
@@ -121,6 +125,7 @@
     CGFloat yValue = self.sectionInset.top;
     NSInteger sectionCount = [self.collectionView numberOfSections];
     
+
     // Now build our items array/dictionary
     for (NSInteger section = 0; section < sectionCount; section ++) {
         NSInteger itemCount = [self.collectionView numberOfItemsInSection:section];
@@ -149,6 +154,7 @@
     }
 }
 
+// 返回collectionView大小的size
 - (CGSize)collectionViewContentSize {
     
     CGFloat collectionViewWidth = CGRectGetWidth(self.collectionView.bounds);
@@ -157,7 +163,7 @@
     for (NSInteger i = 0; i < [self.collectionView numberOfSections]; i++) {
         totalItems += [self.collectionView numberOfItemsInSection:i];
     }
-    // When the totalItems % 2 == 1, do this.
+    // When the totalItems % 2 == 1, dothis.
     if (totalItems % 2 == 1) {
         totalItems = totalItems + 1;
     }
@@ -168,7 +174,13 @@
     
     return CGSizeMake(collectionViewWidth, height);
 }
-
+/**
+ *  重写
+ *
+ *  @param rect 所有元素的布局属性
+ *
+ *  @return 返回的是 UICollectionViewLayoutAttributes 的array
+ */
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
     NSMutableArray *elementArray = [NSMutableArray array];
     
@@ -184,7 +196,13 @@
 
     return elementArray;
 }
-
+/**
+ *  重写
+ *
+ *  @param indexPath indexPath
+ *
+ *  @return 对应indexPath 上的 UICollectionViewLayoutAttribute
+ */
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewLayoutAttributes *layoutAttributes = self.itemDictionary[indexPath];
     if (!layoutAttributes) {
@@ -207,6 +225,7 @@
     return attributes;
 }
 
+// 当边界改变时,是否应该刷新改变
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
     if (!CGSizeEqualToSize(self.collectionView.bounds.size, newBounds.size)) {
         // reset so we re-calc entire layout again
@@ -264,7 +283,9 @@
 
     // Put the cell back animated.
     [UIView animateWithDuration:0.2 animations:^{
+        //
         [self invalidateLayout];
+        //预约在下一个loop的时候刷新当前layout，这一点和UIView的setNeedsLayout方法十分类似。在-invalidateLayout后的下一个collectionView的刷新loop中，又会从prepareLayout开始，依次再调用-collectionViewContentSize和-layoutAttributesForElementsInRect来生成更新后的布局。
     }];
 }
 

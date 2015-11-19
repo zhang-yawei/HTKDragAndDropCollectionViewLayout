@@ -30,17 +30,17 @@
 #pragma mark - Layout Properties
 
 /**
- * Item size to display. Required.
+ * Item size to display. Required. 展现出item的大小
  */
 @property (nonatomic) CGSize itemSize;
 
 /**
- * Line spacing between each "row" of items.
+ * Line spacing between each "row" of items. 行间距
  */
 @property (nonatomic) CGFloat lineSpacing;
 
 /**
- * Minimum spacing between each item in a row.
+ * Minimum spacing between each item in a row. 最小行间距
  */
 @property (nonatomic) CGFloat minimumInteritemSpacing;
 
@@ -52,7 +52,7 @@
 #pragma mark - Dragging Properties
 
 /**
- * IndexPath that's currently being dragged. Nil if not dragging.
+ * IndexPath that's currently being dragged. Nil if not dragging. 当前被拖动的item的indexPath 如果没有被拖动,为nil
  */
 @property (nonatomic, strong) NSIndexPath *draggedIndexPath;
 
@@ -63,17 +63,17 @@
 @property (nonatomic) CGRect draggedCellFrame;
 
 /**
- * Final indexPath the dragged ended up at (new indexPath).
+ * Final indexPath the dragged ended up at (new indexPath). 拖动结束时候,item 所在的indexPath
  */
 @property (nonatomic, strong) NSIndexPath *finalIndexPath;
 
 /**
- * Center of the cell being dragged. Set this to update it's center.
+ * Center of the cell being dragged. Set this to update it's center.开始拖动时的 item的center
  */
 @property (nonatomic) CGPoint draggedCellCenter;
 
 /**
- * Lets you know if a cell is currently being dragged or not
+ * Lets you know if a cell is currently being dragged or not  表明这个按钮是不是正在被拖动
  */
 @property (nonatomic, readonly) BOOL isDraggingCell;
 
@@ -84,7 +84,7 @@
 - (void)exchangeItemsIfNeeded;
 
 /**
- * Resets dragging. Called when user ends dragging of a cell.
+ * Resets dragging. Called when user ends dragging of a cell.   当用户结束拖动
  */
 - (void)resetDragging;
 

@@ -36,11 +36,13 @@
 /**
  * Allows the pan gesture to begin or not
  */
+
 @property (nonatomic) BOOL allowPan;
 
 /**
  * Sets up the cell
  */
+
 - (void)setupDraggableCell;
 
 /**
@@ -74,7 +76,7 @@
 
 - (void)setupDraggableCell {
 
-    // Add our pan gesture to cell
+    // Add our pan gesture to cell 滑动
     self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     self.panGestureRecognizer.delegate = self;
     [self addGestureRecognizer:self.panGestureRecognizer];
@@ -82,6 +84,7 @@
     // Add our long press to cell
     self.longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     // Wait time before we being dragging
+    // 最短长按时间
     self.longPressGestureRecognizer.minimumPressDuration = 1.0;
     self.longPressGestureRecognizer.delegate = self;
    [self addGestureRecognizer:self.longPressGestureRecognizer];
@@ -96,16 +99,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     return NO;
 }
-
+// 开始拖动,是否允许??
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     
     // Check if panning is disabled
+    // 如果是拖动手势,但是当前cell不允许拖动,则不能开始拖动
+            //长按后 当前cell会允许拖动
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && !_allowPan) {
         return NO;
     }
 
     // Determine if user can drag cell
     BOOL cellCanDrag = YES;
+    // 是否允许拖动,由代理方法来确定
     if ([self.draggingDelegate respondsToSelector:@selector(userCanDragCell:)]) {
         cellCanDrag = [self.draggingDelegate userCanDragCell:self];
     }
@@ -120,8 +126,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         case UIGestureRecognizerStateBegan: {
             // Set initial alpha to show user they can
             // begin dragging.
+            // 开始长按改变透明度
             self.alpha = HTKDraggableCellInitialDragAlphaValue;
-            self.allowPan = YES;
+            self.allowPan = YES; // 开始允许拖动
             break;
         }
         case UIGestureRecognizerStateChanged: {
@@ -130,11 +137,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateFailed:
+            // 拖动状态结束
         case UIGestureRecognizerStateCancelled: {
             // set alpha back
             self.alpha = 1.0;
             self.allowPan = NO;
             // Cause pan to cancel
+            // 长按状态结束,本次拖动结束,允许再次拖动
             self.panGestureRecognizer.enabled = NO;
             self.panGestureRecognizer.enabled = YES;
             break;
@@ -147,12 +156,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture {
     
     switch (panGesture.state) {
+            //根据pangesture 的状态判断调用哪个方法
+        //开始拖动时,调用 userDidBeginDraggingCell 方法
         case UIGestureRecognizerStateBegan: {
             if ([self.draggingDelegate respondsToSelector:@selector(userDidBeginDraggingCell:)]) {
                 [self.draggingDelegate userDidBeginDraggingCell:self];
             }
             break;
         }
+            // 拖动中 调用userDidDragCell:withGestureRecognizer: 方法
         case UIGestureRecognizerStateChanged: {
             if ([self.draggingDelegate respondsToSelector:@selector(userDidDragCell:withGestureRecognizer:)]) {
                 [self.draggingDelegate userDidDragCell:self withGestureRecognizer:panGesture];
@@ -161,8 +173,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
+            // 结束拖动,调用 userDidEndDraggingCell方法
         case UIGestureRecognizerStateEnded: {
             // Set alpha back
+        
             self.alpha = 1.0;
             if ([self.draggingDelegate respondsToSelector:@selector(userDidEndDraggingCell:)]) {
                 [self.draggingDelegate userDidEndDraggingCell:self];
