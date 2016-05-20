@@ -127,6 +127,7 @@
     
 
     // Now build our items array/dictionary
+    // 遍历每一个section,再遍历section中的每一个item
     for (NSInteger section = 0; section < sectionCount; section ++) {
         NSInteger itemCount = [self.collectionView numberOfItemsInSection:section];
         for (NSInteger item = 0; item < itemCount; item ++) {
@@ -139,6 +140,8 @@
             }
             
             // Create IndexPath
+            // 创建indexpatch
+            // 根据size,spaceing等创建attribute.并且保存到字典和数组中
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
             UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:indexPath];
             // Create frame
@@ -155,6 +158,7 @@
 }
 
 // 返回collectionView大小的size
+// 重写问题
 - (CGSize)collectionViewContentSize {
     
     CGFloat collectionViewWidth = CGRectGetWidth(self.collectionView.bounds);
@@ -206,6 +210,7 @@
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewLayoutAttributes *layoutAttributes = self.itemDictionary[indexPath];
     if (!layoutAttributes) {
+        // 创建一个attribute并返回
         layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     }
     [self applyDragAttributes:layoutAttributes];

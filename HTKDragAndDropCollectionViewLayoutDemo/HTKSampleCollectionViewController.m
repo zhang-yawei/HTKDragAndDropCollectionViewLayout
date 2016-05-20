@@ -76,6 +76,7 @@
     NSUInteger count = self.dataArray.count;
     NSString *newItem = [NSString stringWithFormat:@"%lu", count];
     [self.dataArray addObject:newItem];
+    // 插入 当datesource发生变化的时候,可以调用
     [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:count inSection:0]]];
 }
 
