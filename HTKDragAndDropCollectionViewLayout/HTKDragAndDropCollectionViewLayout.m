@@ -143,6 +143,8 @@
             // 创建indexpatch
             // 根据size,spaceing等创建attribute.并且保存到字典和数组中
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
+            
+           
             UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:indexPath];
             // Create frame
             attributes.frame = CGRectMake(xValue, yValue, self.itemSize.width, self.itemSize.height);
@@ -181,9 +183,12 @@
 /**
  *  重写
  *
- *  @param rect 所有元素的布局属性
+ *  @param rect 可以见的布局区域. 
  *
  *  @return 返回的是 UICollectionViewLayoutAttributes 的array
+ 
+ attrubute 是通过 layoutAttributesForItemAtIndexPath: 实现的,这里在prepare里实现过了.
+ 
  */
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
     NSMutableArray *elementArray = [NSMutableArray array];
@@ -195,6 +200,7 @@
         if (CGRectIntersectsRect(attribute.frame, rect)) {
             [self applyDragAttributes:attribute];
             [elementArray addObject:attribute];
+
         }
     }];
 
@@ -204,6 +210,8 @@
  *  重写
  *
  *  @param indexPath indexPath
+ 
+    为每一个index path 创建并且配置一个合适的布局属性对象.
  *
  *  @return 对应indexPath 上的 UICollectionViewLayoutAttribute
  */
@@ -211,6 +219,13 @@
     UICollectionViewLayoutAttributes *layoutAttributes = self.itemDictionary[indexPath];
     if (!layoutAttributes) {
         // 创建一个attribute并返回
+        
+        /**
+         *  collection view 会为某个特殊的 cell，supplementary 或者 decoration view 向布局对象请求布局属性，而非所有可见的对象。这就是当其他三个方法开始起作用时，你实现的 layoutAttributesForItemAtIndexPath: 需要创建并返回一个单独的布局属性对象，这样才能正确的格式化传给你的 index path 所对应的 cell。
+         
+         你可以通过调用 +[UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:]这个方法，然后根据 index path 修改属性。为了得到需要显示在这个 index path 内的数据，你可能需要访问 collection view 的数据源。到目前为止，至少确保设置了 frame 属性，除非你所有的 cell 都位于彼此上方。
+         */
+        
         layoutAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     }
     [self applyDragAttributes:layoutAttributes];
